@@ -9,31 +9,57 @@ import (
 )
 
 func main() {
-	num := []int{15, 10, 9, 11, 19, 32, 8, 20, 21, 22, 38, 7, 5}
-	totalcount, err := strconv.Atoi(os.Args[1])
+
+	if len(os.Args) != 2 {
+		log.Fatal("引数に5,6,7いずれかの数が必要です")
+	}
+
+	arg, err := strconv.Atoi(os.Args[1])
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("引数の数値が正しくありません")
 	}
-	allnum := make([]int, 0, totalcount)
-
-	for {
-		n := rand.Intn(len(num))
-		exists := false
-		for _, v := range allnum {
-			if n == v {
-				exists = true
-			}
-		}
-		if !exists {
-			allnum = append(allnum, n)
-		}
-		if len(allnum) == totalcount {
-			break
-		}
+	if !(arg == 5 || arg == 6 || arg == 7) {
+		log.Fatal("引数は5,6,7のいずれかを入力してください")
 	}
 
-	for _, i := range allnum {
-		fmt.Printf("%d ", num[i])
+	// 選択する数がすべて格納された
+	allCount := rotoSlice(arg)
+
+	result := choiceNum(allCount, arg)
+
+	fmt.Println(result)
+}
+
+func rotoSlice(i int) []int {
+	var sliceLength int
+	if i == 5 {
+		sliceLength = 31
+	} else if i == 6 {
+		sliceLength = 43
+	} else if i == 7 {
+		sliceLength = 37
 	}
-	fmt.Println("")
+
+	a := make([]int, sliceLength)
+	for i := range a {
+		a[i] = i + 1
+	}
+
+	return a
+}
+
+// 引数にすべての数が入ったスライスとos.Argsのカウントを受け取って最終的に選ぶ数を返す
+func choiceNum(allCount []int, args int) []int {
+	result := make([]int, args)
+	allNumber := allCount
+	for i := 0; i < args; i++ {
+		num := rand.Intn(len(allNumber))
+		//選択した数値をresultに格納
+		result[i] = allNumber[num]
+
+		//スライスから選択した要素を削除
+		allNumber = append(allNumber[:num], allNumber[num+1:]...)
+
+	}
+	return result
 }
